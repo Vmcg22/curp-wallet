@@ -1,0 +1,11 @@
+services:
+  curp-wallet:
+    build: .
+    container_name: curp-wallet
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    environment:
+      - TZ=America/Mexico_City
+    volumes:
+      - ./app:/app/app:ro
