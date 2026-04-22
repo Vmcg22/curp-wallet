@@ -79,6 +79,7 @@ async function formToCardData(form) {
   );
   const val = (name) => hidden.has(name) ? '' : (fd.get(name) || '');
 
+  const showPhoto = !hidden.has('foto');
   const data = {
     nombre: fd.get('nombre_completo') || '',
     curp: val('curp').toUpperCase(),
@@ -97,9 +98,10 @@ async function formToCardData(form) {
     emergenciaTel: val('contacto_emergencia_telefono'),
     notas: fd.get('notas') || '',
     photoUrl: null,
+    showPhoto,
   };
 
-  if (!hidden.has('foto')) {
+  if (showPhoto) {
     const photoFile = fd.get('foto');
     if (photoFile instanceof File && photoFile.size > 0) {
       try {
@@ -219,6 +221,7 @@ document.getElementById('direct-card-btn').addEventListener('click', async (e) =
       licencia: '', nss: '', alergias: '', padecimientos: '',
       emergenciaNombre: '', emergenciaTel: '',
       photoUrl: null,
+      showPhoto: true,
     };
     await showCards(data);
     toast('Tarjeta generada');

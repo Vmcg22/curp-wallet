@@ -44,14 +44,18 @@ function backField(label, value, opts = {}) {
 }
 
 /**
- * FRONT — la columna de la foto se omite si no hay foto.
+ * FRONT — la columna de la foto solo se omite si el usuario apaga el ojo de "foto".
+ * Si no hay foto pero el ojo está prendido, se muestra un avatar placeholder.
  */
-function renderCardFront({ nombre, curp, rfc, fechaNacimiento, photoUrl }) {
-  const showPhoto = Boolean(photoUrl);
+function renderCardFront({ nombre, curp, rfc, fechaNacimiento, photoUrl, showPhoto = true }) {
+  const photoInner = photoUrl
+    ? `<img src="${esc(photoUrl)}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">`
+    : `<svg viewBox="0 0 80 100" style="width: 100%; height: 100%; display: block;">
+         <circle cx="40" cy="36" r="14" fill="#0E7C66" opacity="0.5"></circle>
+         <path d="M12 100 Q12 66 40 66 Q68 66 68 100 Z" fill="#0E7C66" opacity="0.5"></path>
+       </svg>`;
   const photoBlock = showPhoto
-    ? `<div style="background: #EFEDE5; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; aspect-ratio: 3/4; overflow: hidden;">
-         <img src="${esc(photoUrl)}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-       </div>`
+    ? `<div style="background: #EFEDE5; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; aspect-ratio: 3/4; overflow: hidden;">${photoInner}</div>`
     : '';
 
   const metaBlocks = [
