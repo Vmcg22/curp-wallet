@@ -29,18 +29,33 @@ const FRONT_VALUE_STYLE = 'color: #1a1a1a; font-size: 11px; font-family: monospa
 const BACK_LABEL_STYLE = 'color: #8a8880; font-size: 10px; letter-spacing: 1px; font-weight: 500; margin-bottom: 2px;';
 const BACK_VALUE_STYLE = 'color: #1a1a1a; font-size: 11px; font-family: monospace; letter-spacing: 0.3px;';
 
+// value === null  → field hidden by user (eye off) → omit block entirely
+// value === ''     → eye on, no input yet → show label + "—"
+// value === string → show label + value
 function frontField(label, value, fullWidth = false) {
-  if (!value) return '';
+  if (value === null) return '';
+  const display = value || '—';
   const wrap = fullWidth ? ' style="grid-column: 1 / -1;"' : '';
-  return `<div${wrap}><div style="${FRONT_LABEL_STYLE}">${esc(label)}</div><div style="${FRONT_VALUE_STYLE}">${esc(value)}</div></div>`;
+  return `<div${wrap}><div style="${FRONT_LABEL_STYLE}">${esc(label)}</div><div style="${FRONT_VALUE_STYLE}">${esc(display)}</div></div>`;
 }
 
 function backField(label, value, opts = {}) {
-  if (!value) return '';
+  if (value === null) return '';
   const { fullWidth = false, valueStyle = BACK_VALUE_STYLE, ellipsis = false } = opts;
+  const display = value || '—';
   const wrap = fullWidth ? ' style="grid-column: 1 / -1;"' : '';
   const vStyle = ellipsis ? `${valueStyle} white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` : valueStyle;
-  return `<div${wrap}><div style="${BACK_LABEL_STYLE}">${esc(label)}</div><div style="${vStyle}">${esc(value)}</div></div>`;
+  return `<div${wrap}><div style="${BACK_LABEL_STYLE}">${esc(label)}</div><div style="${vStyle}">${esc(display)}</div></div>`;
+}
+
+// Combine multiple values into one display string.
+// Returns null if ALL values are null (all hidden by eye toggle).
+// Returns '—' if at least one is visible (eye on) but all are empty.
+// Otherwise joins non-empty values with ' · '.
+function combineValues(...vals) {
+  const visible = vals.filter(v => v !== null);
+  if (!visible.length) return null;
+  return visible.filter(v => v).join(' · ') || '—';
 }
 
 /**
@@ -58,10 +73,11 @@ function renderCardFront({ nombre, curp, rfc, fechaNacimiento, photoUrl, showPho
     ? `<div style="background: #EFEDE5; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; aspect-ratio: 3/4; overflow: hidden;">${photoInner}</div>`
     : '';
 
+  const fechaDisplay = fechaNacimiento === null ? null : fmtDate(fechaNacimiento);
   const metaBlocks = [
     frontField('CURP', curp),
     frontField('RFC', rfc),
-    frontField('Fecha de nacimiento', fmtDate(fechaNacimiento), true),
+    frontField('Fecha de nacimiento', fechaDisplay, true),
   ].join('');
 
   const grid = metaBlocks
@@ -101,11 +117,14 @@ function renderCardBack(data) {
     emergenciaNombre, emergenciaTel,
   } = data;
 
-  const tipoSangreBlock = tipoSangre
-    ? `<div><div style="${BACK_LABEL_STYLE}">TIPO SANGRE</div><div style="color: #0E7C66; font-size: 13px; font-weight: 600;">${esc(tipoSangre)}</div></div>`
-    : '';
+  const tipoSangreBlock = tipoSangre === null
+    ? ''
+    : `<div><div style="${BACK_LABEL_STYLE}">TIPO SANGRE</div><div style="color: #0E7C66; font-size: 13px; font-weight: 600;">${esc(tipoSangre || '—')}</div></div>`;
 
-  const medico = [alergias, padecimientos].filter(Boolean).join(' · ');
+  const medico = combineValues(alergias, padecimientos);
+  const medicoBlock = medico === null
+    ? ''
+    : `<div style="grid-column: 1 / -1;"><div style="${BACK_LABEL_STYLE}">ALERGIAS / PADECIMIENTOS</div><div style="color: #1a1a1a; font-size: 11px; letter-spacing: 0.2px; line-height: 1.3;">${esc(medico)}</div></div>`;
 
   const dataBlocks = [
     tipoSangreBlock,
@@ -113,9 +132,7 @@ function renderCardBack(data) {
     backField('CORREO', correo, { fullWidth: true, ellipsis: true }),
     backField('LICENCIA', licencia),
     backField('NSS', nss),
-    medico
-      ? `<div style="grid-column: 1 / -1;"><div style="${BACK_LABEL_STYLE}">ALERGIAS / PADECIMIENTOS</div><div style="color: #1a1a1a; font-size: 11px; letter-spacing: 0.2px; line-height: 1.3;">${esc(medico)}</div></div>`
-      : '',
+    medicoBlock,
   ].join('');
 
   const dataGrid = dataBlocks
@@ -125,20 +142,20 @@ function renderCardBack(data) {
        </div>`
     : '';
 
-  const emergenciaTexto = [emergenciaNombre, emergenciaTel].filter(Boolean).join(' · ');
-  const emergenciaBlock = emergenciaTexto
-    ? `<div style="background: rgba(14, 124, 102, 0.08); border-left: 3px solid #0E7C66; padding: 7px 10px; border-radius: 4px;">
+  const emergenciaTexto = combineValues(emergenciaNombre, emergenciaTel);
+  const emergenciaBlock = emergenciaTexto === null
+    ? ''
+    : `<div style="background: rgba(14, 124, 102, 0.08); border-left: 3px solid #0E7C66; padding: 7px 10px; border-radius: 4px;">
          <div style="color: #0E7C66; font-size: 9px; letter-spacing: 2px; font-weight: 600; margin-bottom: 2px;">EMERGENCIA</div>
          <div style="color: #1a1a1a; font-size: 11px; font-weight: 500; line-height: 1.3;">${esc(emergenciaTexto)}</div>
-       </div>`
-    : '';
+       </div>`;
 
-  const direccionBlock = direccion
-    ? `<div>
+  const direccionBlock = direccion === null
+    ? ''
+    : `<div>
          <div style="color: #8a8880; font-size: 9px; letter-spacing: 1px; font-weight: 500; text-align: center; margin-top: 2px;">DIRECCIÓN</div>
-         <div style="color: #1a1a1a; font-size: 9px; line-height: 1.25; text-align: center; max-width: 92px; word-break: break-word;">${esc(direccion)}</div>
-       </div>`
-    : '';
+         <div style="color: #1a1a1a; font-size: 9px; line-height: 1.25; text-align: center; max-width: 92px; word-break: break-word;">${esc(direccion || '—')}</div>
+       </div>`;
 
   return `
 <div id="card-back" style="width: 100%; max-width: 460px; aspect-ratio: 1.586; background: #FAFAF6; border-radius: 16px; padding: 22px 22px 22px 30px; display: grid; grid-template-columns: 1fr 96px; gap: 18px; position: relative; overflow: hidden; border: 1px solid #E8E5DE; box-sizing: border-box;">

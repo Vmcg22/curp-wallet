@@ -78,25 +78,26 @@ async function formToCardData(form) {
   const hidden = new Set(
     [...form.querySelectorAll('.eye[aria-pressed="false"]')].map(b => b.dataset.field)
   );
-  const val = (name) => hidden.has(name) ? '' : (fd.get(name) || '');
-
   const showPhoto = !hidden.has('foto');
+  const valOrNull = (name) => hidden.has(name) ? null : (fd.get(name) || '');
+  const upper = (s) => s == null ? s : s.toUpperCase();
+
   const data = {
     nombre: fd.get('nombre_completo') || '',
-    curp: val('curp').toUpperCase(),
-    rfc: val('rfc').toUpperCase(),
-    fechaNacimiento: val('fecha_nacimiento'),
+    curp: upper(valOrNull('curp')),
+    rfc: upper(valOrNull('rfc')),
+    fechaNacimiento: valOrNull('fecha_nacimiento'),
     sexo: fd.get('sexo') || '',
-    tipoSangre: val('tipo_sangre'),
-    telefono: val('telefono'),
-    correo: val('correo'),
-    direccion: val('direccion'),
-    licencia: val('licencia'),
-    nss: val('nss'),
-    alergias: val('alergias'),
-    padecimientos: val('padecimientos'),
-    emergenciaNombre: val('contacto_emergencia_nombre'),
-    emergenciaTel: val('contacto_emergencia_telefono'),
+    tipoSangre: valOrNull('tipo_sangre'),
+    telefono: valOrNull('telefono'),
+    correo: valOrNull('correo'),
+    direccion: valOrNull('direccion'),
+    licencia: valOrNull('licencia'),
+    nss: valOrNull('nss'),
+    alergias: valOrNull('alergias'),
+    padecimientos: valOrNull('padecimientos'),
+    emergenciaNombre: valOrNull('contacto_emergencia_nombre'),
+    emergenciaTel: valOrNull('contacto_emergencia_telefono'),
     notas: fd.get('notas') || '',
     photoUrl: null,
     showPhoto,
