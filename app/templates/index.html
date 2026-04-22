@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarjeta Personal — Identificación de cartera</title>
+  <link rel="stylesheet" href="/static/style.css?v=3">
+</head>
+<body>
+  <header class="hero">
+    <span class="hero-brand">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
+      Identificación personal
+    </span>
+    <h1>Tu identificación, <span class="underline">lista en segundos</span></h1>
+    <p>Datos esenciales, contactos de emergencia e información médica — en un solo lugar, listo para imprimir y enmicar.</p>
+  </header>
+
+  <main>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="upload" role="tab">
+        <span class="tab-num">1</span> Desde PDF del CURP
+      </button>
+      <button class="tab" data-tab="manual" role="tab">
+        <span class="tab-num">2</span> Formulario completo
+      </button>
+    </nav>
+
+    <section id="upload" class="panel active" role="tabpanel">
+      <h2>Subir PDF del CURP</h2>
+      <p class="lead">Sube el PDF oficial descargado de gob.mx. Si es escaneado también funciona — usamos reconocimiento de texto (OCR) como respaldo.</p>
+
+      <form id="upload-form" autocomplete="off">
+        <label class="dropzone" id="dropzone">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 12 15 15"/>
+          </svg>
+          <div class="dropzone-title">Arrastra tu PDF aquí o haz clic para seleccionarlo</div>
+          <div class="dropzone-hint">Formato PDF, máximo 10 MB</div>
+          <div class="dropzone-file" id="dropzone-file"></div>
+          <input type="file" name="pdf" accept="application/pdf" required>
+        </label>
+        <div class="actions">
+          <button type="submit" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            Extraer datos
+          </button>
+          <button type="button" id="direct-card-btn" class="btn-gold">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+            Generar tarjeta directa
+          </button>
+        </div>
+      </form>
+      <div id="parsed-data" class="result hidden"></div>
+    </section>
+
+    <section id="manual" class="panel" role="tabpanel">
+      <h2>Formulario completo</h2>
+      <p class="lead">Completa los campos que correspondan y agrega una foto. Usa el icono del ojo para elegir qué campos aparecen en la tarjeta.</p>
+
+      <form id="card-form" enctype="multipart/form-data" autocomplete="off">
+        <fieldset>
+          <legend>Datos personales</legend>
+          <label>
+            <span class="field-head"><span>Nombre completo *</span></span>
+            <input type="text" name="nombre_completo" required>
+          </label>
+          <div class="row">
+            <label>
+              <span class="field-head">
+                <span>CURP</span>
+                <button type="button" class="eye" data-field="curp" aria-pressed="true" aria-label="Incluir CURP en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="text" name="curp" maxlength="18" style="text-transform:uppercase">
+            </label>
+            <label>
+              <span class="field-head">
+                <span>RFC</span>
+                <button type="button" class="eye" data-field="rfc" aria-pressed="true" aria-label="Incluir RFC en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="text" name="rfc" maxlength="13" style="text-transform:uppercase">
+            </label>
+          </div>
+          <div class="row row-3">
+            <label>
+              <span class="field-head">
+                <span>Fecha de nacimiento</span>
+                <button type="button" class="eye" data-field="fecha_nacimiento" aria-pressed="true" aria-label="Incluir fecha en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="text" name="fecha_nacimiento" placeholder="DD/MM/AAAA">
+            </label>
+            <label>
+              <span class="field-head"><span>Sexo</span></span>
+              <select name="sexo">
+                <option value="">—</option>
+                <option>Hombre</option>
+                <option>Mujer</option>
+              </select>
+            </label>
+            <label>
+              <span class="field-head">
+                <span>Tipo de sangre</span>
+                <button type="button" class="eye" data-field="tipo_sangre" aria-pressed="true" aria-label="Incluir tipo de sangre en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <select name="tipo_sangre">
+                <option value="">—</option>
+                <option>O+</option><option>O-</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Contacto</legend>
+          <div class="row">
+            <label>
+              <span class="field-head">
+                <span>Teléfono</span>
+                <button type="button" class="eye" data-field="telefono" aria-pressed="true" aria-label="Incluir teléfono en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="tel" name="telefono">
+            </label>
+            <label>
+              <span class="field-head">
+                <span>Correo electrónico</span>
+                <button type="button" class="eye" data-field="correo" aria-pressed="true" aria-label="Incluir correo en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="email" name="correo">
+            </label>
+          </div>
+          <label>
+            <span class="field-head">
+              <span>Dirección</span>
+              <button type="button" class="eye" data-field="direccion" aria-pressed="true" aria-label="Incluir dirección en tarjeta" title="Incluir en tarjeta">
+                <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+              </button>
+            </span>
+            <input type="text" name="direccion">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Documentos</legend>
+          <div class="row">
+            <label>
+              <span class="field-head">
+                <span>No. de licencia de conducir</span>
+                <button type="button" class="eye" data-field="licencia" aria-pressed="true" aria-label="Incluir licencia en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="text" name="licencia">
+            </label>
+            <label>
+              <span class="field-head">
+                <span>NSS · Seguro Social</span>
+                <button type="button" class="eye" data-field="nss" aria-pressed="true" aria-label="Incluir NSS en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="text" name="nss">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Información médica</legend>
+          <label>
+            <span class="field-head">
+              <span>Alergias</span>
+              <button type="button" class="eye" data-field="alergias" aria-pressed="true" aria-label="Incluir alergias en tarjeta" title="Incluir en tarjeta">
+                <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+              </button>
+            </span>
+            <input type="text" name="alergias" placeholder="Ej. Penicilina, mariscos">
+          </label>
+          <label>
+            <span class="field-head">
+              <span>Padecimientos / medicamentos</span>
+              <button type="button" class="eye" data-field="padecimientos" aria-pressed="true" aria-label="Incluir padecimientos en tarjeta" title="Incluir en tarjeta">
+                <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+              </button>
+            </span>
+            <input type="text" name="padecimientos" placeholder="Ej. Diabetes, hipertensión">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Contacto de emergencia</legend>
+          <div class="row">
+            <label>
+              <span class="field-head">
+                <span>Nombre</span>
+                <button type="button" class="eye" data-field="contacto_emergencia_nombre" aria-pressed="true" aria-label="Incluir nombre de emergencia en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="text" name="contacto_emergencia_nombre">
+            </label>
+            <label>
+              <span class="field-head">
+                <span>Teléfono</span>
+                <button type="button" class="eye" data-field="contacto_emergencia_telefono" aria-pressed="true" aria-label="Incluir teléfono de emergencia en tarjeta" title="Incluir en tarjeta">
+                  <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+                </button>
+              </span>
+              <input type="tel" name="contacto_emergencia_telefono">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Foto y notas</legend>
+          <label>
+            <span class="field-head">
+              <span>Foto (opcional)</span>
+              <button type="button" class="eye" data-field="foto" aria-pressed="true" aria-label="Incluir foto en tarjeta" title="Incluir en tarjeta">
+                <svg class="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>
+              </button>
+            </span>
+            <input type="file" name="foto" accept="image/*">
+          </label>
+          <label>
+            <span class="field-head"><span>Notas</span></span>
+            <input type="text" name="notas" placeholder="Cualquier dato adicional que quieras incluir">
+          </label>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+            Generar tarjeta
+          </button>
+          <button type="button" id="reset-btn" class="btn-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            Limpiar todo
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section id="result-area" class="result-area hidden">
+      <h2>Tu tarjeta está lista</h2>
+      <p class="lead-sub">Lista para imprimir y enmicar — frente y reverso.</p>
+
+      <div id="card-preview" style="margin: 24px 0;"></div>
+
+      <div class="actions" style="justify-content: center;">
+        <button type="button" class="btn-accent" id="download-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar PNG
+        </button>
+        <button type="button" class="btn-ghost" onclick="window.print()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+  <script src="/static/card.js?v=3"></script>
+  <script src="/static/app.js?v=3"></script>
+</body>
+</html>
