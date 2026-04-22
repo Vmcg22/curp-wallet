@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tarjeta Personal — Identificación de cartera</title>
-  <link rel="stylesheet" href="/static/style.css?v=5">
+  <link rel="stylesheet" href="/static/style.css?v=6">
 </head>
 <body>
   <header class="hero">
@@ -259,10 +259,6 @@
         </fieldset>
 
         <div class="actions">
-          <button type="submit" class="btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-            Generar tarjeta
-          </button>
           <button type="button" id="reset-btn" class="btn-danger">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
             Limpiar todo
@@ -271,9 +267,9 @@
       </form>
     </section>
 
-    <section id="result-area" class="result-area hidden">
-      <h2>Tu tarjeta está lista</h2>
-      <p class="lead-sub">Lista para imprimir y enmicar — frente y reverso.</p>
+    <section id="result-area" class="result-area">
+      <h2>Vista previa</h2>
+      <p class="lead-sub">Se actualiza al editar el formulario.</p>
 
       <div id="card-preview" style="margin: 24px 0;"></div>
 
@@ -294,7 +290,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
-  <script src="/static/card.js?v=5"></script>
-  <script src="/static/app.js?v=5"></script>
+  <script src="/static/card.js?v=6"></script>
+  <script src="/static/app.js?v=6"></script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 window.addEventListener('pageshow', () => {
   document.getElementById('card-form')?.reset();
   document.getElementById('upload-form')?.reset();
+  scheduleLiveRender(0);
 });
 
 // --------------- TABS ---------------
@@ -132,16 +133,6 @@ document.getElementById('card-form')?.addEventListener('click', (e) => {
 let cardLive = false;
 let liveTimer = null;
 
-async function showCards(data, { scroll = true } = {}) {
-  const area = document.getElementById('result-area');
-  const preview = document.getElementById('card-preview');
-  await window.IDCard.render(data, preview);
-  area.classList.remove('hidden');
-  cardLive = true;
-  document.querySelector('main')?.classList.add('has-preview');
-  if (scroll) area.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
 async function liveRender() {
   if (!cardLive) return;
   const form = document.getElementById('card-form');
@@ -183,6 +174,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     if (data.fecha_nacimiento) form.fecha_nacimiento.value = data.fecha_nacimiento;
     if (data.sexo) form.sexo.value = data.sexo;
 
+    scheduleLiveRender(0);
     toast('Datos extraídos — completa el formulario');
     document.querySelector('.tab[data-tab="manual"]').click();
   } finally {
@@ -209,40 +201,22 @@ document.getElementById('direct-card-btn').addEventListener('click', async (e) =
       toast('No se detectó CURP en el PDF', true);
       return;
     }
+    const form = document.getElementById('card-form');
     const nombreParts = [parsed.nombre, parsed.primer_apellido, parsed.segundo_apellido].filter(Boolean);
-    const data = {
-      nombre: nombreParts.join(' ') || parsed.curp,
-      curp: parsed.curp,
-      rfc: '',
-      fechaNacimiento: parsed.fecha_nacimiento || '',
-      sexo: parsed.sexo || '',
-      tipoSangre: '',
-      telefono: '', correo: '', direccion: '',
-      licencia: '', nss: '', alergias: '', padecimientos: '',
-      emergenciaNombre: '', emergenciaTel: '',
-      photoUrl: null,
-      showPhoto: true,
-    };
-    await showCards(data);
-    toast('Tarjeta generada');
+    if (nombreParts.length) form.nombre_completo.value = nombreParts.join(' ');
+    if (parsed.curp) form.curp.value = parsed.curp;
+    if (parsed.fecha_nacimiento) form.fecha_nacimiento.value = parsed.fecha_nacimiento;
+    if (parsed.sexo) form.sexo.value = parsed.sexo;
+    scheduleLiveRender(0);
+    document.querySelector('.tab[data-tab="manual"]').click();
+    toast('Datos cargados en el formulario');
   } finally {
     setLoading(btn, false);
   }
 });
 
-// --------------- GENERATE CARD FROM FORM ---------------
-document.getElementById('card-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = e.submitter;
-  setLoading(btn, true);
-  try {
-    const data = await formToCardData(e.target);
-    await showCards(data);
-    toast('Tarjeta generada');
-  } finally {
-    setLoading(btn, false);
-  }
-});
+// Prevent Enter-key form submission since the live preview handles updates
+document.getElementById('card-form').addEventListener('submit', (e) => e.preventDefault());
 
 // --------------- DOWNLOAD PNG ---------------
 document.getElementById('download-btn').addEventListener('click', async (e) => {
@@ -285,10 +259,7 @@ document.getElementById('download-btn').addEventListener('click', async (e) => {
 
 // --------------- RESET ---------------
 document.getElementById('reset-btn').addEventListener('click', () => {
-  if (!confirm('¿Limpiar todos los datos del formulario y la tarjeta generada?')) return;
-  cardLive = false;
-  clearTimeout(liveTimer);
-  document.querySelector('main')?.classList.remove('has-preview');
+  if (!confirm('¿Limpiar todos los datos del formulario?')) return;
   document.getElementById('card-form').reset();
   document.getElementById('upload-form').reset();
   document.querySelectorAll('#card-form .eye[data-field]').forEach(btn => {
@@ -298,10 +269,15 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   });
   document.getElementById('parsed-data').classList.add('hidden');
   document.getElementById('parsed-data').textContent = '';
-  document.getElementById('result-area').classList.add('hidden');
-  document.getElementById('card-preview').innerHTML = '';
   dropzoneFile.textContent = '';
-  toast('Todo limpio');
-  document.querySelector('.tab[data-tab="upload"]').click();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  scheduleLiveRender(0);
+  toast('Formulario limpio');
 });
+
+// --------------- INIT: render preview immediately ---------------
+(async () => {
+  cardLive = true;
+  document.querySelector('main')?.classList.add('has-preview');
+  document.getElementById('result-area')?.classList.remove('hidden');
+  await liveRender();
+})();

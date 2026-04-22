@@ -197,15 +197,21 @@ async function renderCards(data, container) {
 
   const canvas = container.querySelector('#qr-canvas');
   if (canvas && window.QRCode) {
-    try {
-      await window.QRCode.toCanvas(canvas, buildQRPayload(data), {
-        margin: 0,
-        errorCorrectionLevel: 'M',
-        color: { dark: '#1a1a1a', light: '#ffffff' },
-        width: 88,
-      });
-    } catch (err) {
-      console.error('QR error:', err);
+    const payload = buildQRPayload(data);
+    if (payload) {
+      try {
+        await window.QRCode.toCanvas(canvas, payload, {
+          margin: 0,
+          errorCorrectionLevel: 'M',
+          color: { dark: '#1a1a1a', light: '#ffffff' },
+          width: 88,
+        });
+      } catch (err) {
+        console.error('QR error:', err);
+      }
+    } else {
+      const ctx = canvas.getContext('2d');
+      ctx?.clearRect(0, 0, canvas.width, canvas.height);
     }
   }
 }
