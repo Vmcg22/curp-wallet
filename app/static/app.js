@@ -123,15 +123,37 @@ document.getElementById('card-form')?.addEventListener('click', (e) => {
   btn.setAttribute('aria-pressed', String(next));
   btn.setAttribute('title', next ? 'Incluir en tarjeta' : 'Oculto en la tarjeta');
   btn.closest('label')?.classList.toggle('hidden-from-card', !next);
+  scheduleLiveRender(0);
 });
 
-async function showCards(data) {
+// --------------- LIVE PREVIEW ---------------
+let cardLive = false;
+let liveTimer = null;
+
+async function showCards(data, { scroll = true } = {}) {
   const area = document.getElementById('result-area');
   const preview = document.getElementById('card-preview');
   await window.IDCard.render(data, preview);
   area.classList.remove('hidden');
-  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  cardLive = true;
+  document.querySelector('main')?.classList.add('has-preview');
+  if (scroll) area.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+async function liveRender() {
+  if (!cardLive) return;
+  const form = document.getElementById('card-form');
+  const data = await formToCardData(form);
+  await window.IDCard.render(data, document.getElementById('card-preview'));
+}
+
+function scheduleLiveRender(delay = 180) {
+  if (!cardLive) return;
+  clearTimeout(liveTimer);
+  liveTimer = setTimeout(liveRender, delay);
+}
+
+document.getElementById('card-form')?.addEventListener('input', () => scheduleLiveRender());
 
 // --------------- PARSE CURP PDF ---------------
 document.getElementById('upload-form').addEventListener('submit', async (e) => {
@@ -261,6 +283,9 @@ document.getElementById('download-btn').addEventListener('click', async (e) => {
 // --------------- RESET ---------------
 document.getElementById('reset-btn').addEventListener('click', () => {
   if (!confirm('¿Limpiar todos los datos del formulario y la tarjeta generada?')) return;
+  cardLive = false;
+  clearTimeout(liveTimer);
+  document.querySelector('main')?.classList.remove('has-preview');
   document.getElementById('card-form').reset();
   document.getElementById('upload-form').reset();
   document.querySelectorAll('#card-form .eye[data-field]').forEach(btn => {

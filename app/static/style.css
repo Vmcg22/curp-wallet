@@ -108,6 +108,32 @@ main {
   z-index: 2;
 }
 
+@media (min-width: 1100px) {
+  main.has-preview {
+    max-width: 1280px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 500px);
+    grid-template-areas:
+      "tabs    tabs"
+      "panel   preview";
+    column-gap: 24px;
+    align-items: start;
+  }
+  main.has-preview .tabs { grid-area: tabs; }
+  main.has-preview .panel { grid-area: panel; }
+  main.has-preview #result-area {
+    grid-area: preview;
+    position: sticky;
+    top: 16px;
+    margin-top: 0;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    padding: 24px;
+  }
+  main.has-preview #result-area h2 { font-size: 18px; }
+  main.has-preview #result-area .lead-sub { font-size: 13px; margin-bottom: 14px; }
+}
+
 /* ---------- TABS ---------- */
 .tabs {
   display: flex;
