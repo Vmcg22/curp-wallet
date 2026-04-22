@@ -50,7 +50,8 @@ def _decode_curp(curp: str) -> dict:
         return out
     yy, mm, dd = curp[4:6], curp[6:8], curp[8:10]
     year = int(yy)
-    year += 2000 if curp[16].isdigit() else 1900
+    # Homoclave (curp[16]): digit = born pre-2000, letter = born 2000+
+    year += 1900 if curp[16].isdigit() else 2000
     out["fecha_nacimiento"] = f"{dd}/{mm}/{year:04d}"
     out["sexo"] = "Hombre" if curp[10] == "H" else "Mujer"
     out["entidad_nacimiento"] = ENTIDADES.get(curp[11:13], curp[11:13])
