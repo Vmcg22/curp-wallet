@@ -182,26 +182,58 @@ function renderCardBack(data) {
   `.trim();
 }
 
+function escapeVCard(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/,/g, '\\,')
+    .replace(/;/g, '\\;')
+    .replace(/\n/g, '\\n');
+}
+
 function buildQRPayload(data) {
-  const lines = [
-    ['NOMBRE', data.nombre],
-    ['CURP', data.curp],
-    ['RFC', data.rfc],
-    ['NAC', data.fechaNacimiento],
-    ['SANGRE', data.tipoSangre],
-    ['TEL', data.telefono],
-    ['CORREO', data.correo],
-    ['DIR', data.direccion],
-    ['LIC', data.licencia],
-    ['NSS', data.nss],
-    ['ALERGIAS', data.alergias],
-    ['PADEC', data.padecimientos],
-    ['EMERG', [data.emergenciaNombre, data.emergenciaTel].filter(Boolean).join(' ')],
-  ];
-  return lines
-    .filter(([, v]) => v)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n');
+  if (!data.nombre) return 'CURP Wallet';
+
+  const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+
+  const nombre = data.nombre.trim();
+  lines.push(`FN:${escapeVCard(nombre)}`);
+  const parts = nombre.split(/\s+/);
+  if (parts.length >= 3) {
+    const apellidos = parts.slice(-2).join(' ');
+    const nombres = parts.slice(0, -2).join(' ');
+    lines.push(`N:${escapeVCard(apellidos)};${escapeVCard(nombres)};;;`);
+  } else {
+    lines.push(`N:${escapeVCard(nombre)};;;;`);
+  }
+
+  if (data.telefono) lines.push(`TEL;TYPE=CELL:${data.telefono}`);
+  if (data.correo) lines.push(`EMAIL:${data.correo}`);
+  if (data.direccion) lines.push(`ADR;TYPE=HOME:;;${escapeVCard(data.direccion)};;;;`);
+
+  if (data.fechaNacimiento) {
+    const m = String(data.fechaNacimiento).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (m) {
+      const [, d, mo, y] = m;
+      lines.push(`BDAY:${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}`);
+    }
+  }
+
+  const notes = [];
+  if (data.curp) notes.push(`CURP: ${data.curp}`);
+  if (data.rfc) notes.push(`RFC: ${data.rfc}`);
+  if (data.tipoSangre) notes.push(`Sangre: ${data.tipoSangre}`);
+  if (data.licencia) notes.push(`Licencia: ${data.licencia}`);
+  if (data.nss) notes.push(`NSS: ${data.nss}`);
+  if (data.alergias) notes.push(`Alergias: ${data.alergias}`);
+  if (data.padecimientos) notes.push(`Padecimientos: ${data.padecimientos}`);
+  const emergencia = [data.emergenciaNombre, data.emergenciaTel].filter(Boolean).join(' · ');
+  if (emergencia) notes.push(`Emergencia: ${emergencia}`);
+  if (notes.length) {
+    lines.push(`NOTE:${escapeVCard(notes.join('\n'))}`);
+  }
+
+  lines.push('END:VCARD');
+  return lines.join('\n');
 }
 
 async function renderCards(data, container) {
