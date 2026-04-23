@@ -158,7 +158,7 @@ function renderCardBack(data) {
        </div>`;
 
   return `
-<div id="card-back" style="width: 100%; max-width: 460px; aspect-ratio: 1.586; background: #FAFAF6; border-radius: 16px; padding: 22px 22px 22px 30px; display: grid; grid-template-columns: 1fr 96px; gap: 18px; position: relative; overflow: hidden; border: 1px solid #E8E5DE; box-sizing: border-box;">
+<div id="card-back" style="width: 100%; max-width: 460px; aspect-ratio: 1.586; background: #FAFAF6; border-radius: 16px; padding: 22px 22px 22px 30px; display: grid; grid-template-columns: 1fr 120px; gap: 18px; position: relative; overflow: hidden; border: 1px solid #E8E5DE; box-sizing: border-box;">
   <div style="position: absolute; top: 0; left: 0; bottom: 0; width: 6px; background: #0E7C66;"></div>
   <div style="position: absolute; top: 22px; right: 24px; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
     <div style="width: 14px; height: 2px; background: #0E7C66; opacity: 0.25;"></div>
@@ -172,7 +172,7 @@ function renderCardBack(data) {
   </div>
 
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
-    <div id="qr-frame" style="width: 96px; height: 96px; background: white; border: 1px solid #E8E5DE; border-radius: 6px; padding: 4px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+    <div id="qr-frame" style="width: 120px; height: 120px; background: white; border: 1px solid #E8E5DE; border-radius: 6px; padding: 4px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
       <canvas id="qr-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
     </div>
     <div style="color: #8a8880; font-size: 8px; letter-spacing: 1.5px;">ESCANEAR</div>
