@@ -160,6 +160,11 @@ function renderCardBack(data) {
   return `
 <div id="card-back" style="width: 100%; max-width: 460px; aspect-ratio: 1.586; background: #FAFAF6; border-radius: 16px; padding: 22px 22px 22px 30px; display: grid; grid-template-columns: 1fr 96px; gap: 18px; position: relative; overflow: hidden; border: 1px solid #E8E5DE; box-sizing: border-box;">
   <div style="position: absolute; top: 0; left: 0; bottom: 0; width: 6px; background: #0E7C66;"></div>
+  <div style="position: absolute; top: 22px; right: 24px; display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+    <div style="width: 14px; height: 2px; background: #0E7C66; opacity: 0.25;"></div>
+    <div style="width: 28px; height: 2px; background: #0E7C66; opacity: 0.5;"></div>
+    <div style="width: 44px; height: 2px; background: #0E7C66;"></div>
+  </div>
 
   <div style="display: flex; flex-direction: column; justify-content: space-between; min-width: 0; gap: 12px;">
     ${dataGrid}
