@@ -254,6 +254,10 @@ async function renderCards(data, container) {
         color: { dark: '#000000', light: '#ffffff' },
         width: 256,
       });
+      // QRCode lib hardcodes canvas.style.width/height to the `width` option,
+      // overriding our CSS. Put ours back so canvas stays inside the frame.
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
     } catch (err) {
       console.error('QR error:', err);
     }
